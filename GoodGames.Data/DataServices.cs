@@ -13,7 +13,7 @@ namespace GoodGames.Data
             {
                 if (factory.UserDAO.All().Any(user => user.Username.ToLower().Equals(username.ToLower())))
                 {
-                    throw new FaultException(new FaultReason("Usernam exists in database"), new FaultCode("400"), "");
+                    throw new FaultException(new FaultReason("Username exists in database"), new FaultCode("400"), "");
                 }
 
                 if (factory.UserDAO.All().Any(user => user.Email.ToLower().Equals(email.ToLower())))
@@ -32,26 +32,31 @@ namespace GoodGames.Data
         }
 
 
-        public double GetGameMedia(int id)
+        public double GetGameMedia(int gameId)
         {
             using (DAOFactory factory = new DAOFactory())
             {
-                Game[] game = factory.GameDAO.All().Where((game) => game.Id == id && game.Status.Equals(GameStatus.FINISHED) && game.Mark != -1).ToArray();
+                Game[] game = factory.GameDAO.All().Where((game) => game.GameId == gameId && game.Status.Equals(GameStatus.FINISHED) && game.Mark != -1).ToArray();
                 int numberOfMarks = game.Length;
 
-                double total = game.Sum((game) => game.Mark);
+                if (numberOfMarks == 0)
+                {
+                    throw new FaultException(new FaultReason("There are no marks yet"), new FaultCode("400"), "");
+                }
 
+                double total = game.Sum((game) => game.Mark);
                 return total / numberOfMarks;
 
             }
         }
 
 
-        public Game[] GetGamesForUser(string username)
+        public Game[] GetGamesForUser(int userId)
         {
             using (DAOFactory factory = new DAOFactory())
             {
-                return factory.GameDAO.All().Where((game) => game.Player.Username.ToLower().Equals(username.ToLower())).ToArray();
+                User playerRelated = factory.UserDAO.Find(userId);
+                return factory.GameDAO.All().Where((game) => game.Player.Equals(playerRelated)).ToArray();
             }
         }
 
@@ -79,11 +84,14 @@ namespace GoodGames.Data
             }
         }
 
-        public Game ChangeGameStatus(int id, int userId, GameStatus status)
+        public Game ChangeGameStatus(int gameId, int userId, GameStatus status)
         {
             using (DAOFactory factory = new DAOFactory())
             {
-                Game gameFound = factory.GameDAO.All().Where((game) => game.Id == id && game.Player.Id == userId).First();
+                User playerRelated = factory.UserDAO.Find(userId);
+                Game? gameFound = factory.GameDAO.All()
+                    .FirstOrDefault(game => game != null && game.GameId == gameId && game.Player != null && game.Player.Equals(playerRelated));
+
 
                 if (gameFound != null)
                 {
@@ -93,23 +101,26 @@ namespace GoodGames.Data
                 }
                 else
                 {
-                    User playerRelated = factory.UserDAO.Find(userId);
-                    Game toAdd = new Game();
-                    toAdd.Id = id;
-                    toAdd.Mark = -1;
-                    toAdd.Status = status;
-                    toAdd.Player = playerRelated;
+                    Game toAdd = new()
+                    {
+                        GameId = gameId,
+                        Mark = -1,
+                        Status = status,
+                        Player = playerRelated
+                    };
                     factory.GameDAO.Add(toAdd);
                     return toAdd;
                 }
             }
         }
 
-        public Game ChangeGameMark(int id, int userId, double newMark)
+        public Game ChangeGameMark(int gameId, int userId, double newMark)
         {
             using (DAOFactory factory = new DAOFactory())
             {
-                Game gameFound = factory.GameDAO.All().Where((game) => game.Id == id && game.Player.Id == userId).First();
+                User playerRelated = factory.UserDAO.Find(userId);
+                Game? gameFound = factory.GameDAO.All()
+                    .FirstOrDefault(game => game != null && game.GameId == gameId && game.Player != null && game.Player.Equals(playerRelated));
 
                 if (gameFound != null)
                 {

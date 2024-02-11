@@ -19,16 +19,16 @@ namespace GoodGames.Data
         public User GetUserByEmail(string email);
 
         [OperationContract]
-        public Game[] GetGamesForUser(string username);
+        public Game[] GetGamesForUser(int userId);
 
         [OperationContract]
-        public double GetGameMedia(int id);
+        public double GetGameMedia(int gameId);
 
         [OperationContract]
-        public Game ChangeGameStatus(int id, int userId, GameStatus status);
+        public Game ChangeGameStatus(int gameId, int userId, GameStatus status);
 
         [OperationContract]
-        public Game ChangeGameMark(int id, int userId, double newMark);
+        public Game ChangeGameMark(int gameId, int userId, double newMark);
 
     }
 }
