@@ -16,12 +16,17 @@ namespace GoodGames.Data
             _context = new DataContext();
         }
 
-        public IStatisticsDAO StatisticsDAO
+        public IUserDAO UserDAO
         {
-            get { return new StatisticsDAO(_context); }
+            get { return new UserDAO(_context); }
         }
 
-        
+        public IGameDAO GameDAO
+        {
+            get { return new GameDAO(_context); }
+        }
+
+
         public void Dispose() { _context.Dispose(); }
     }
 }

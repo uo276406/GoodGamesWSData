@@ -2,7 +2,7 @@
 
 namespace GoodGames.Data.DAO
 {
-    public interface IStatisticsDAO: IGenericDAO<Statistics>
+    public interface IGameDAO: IGenericDAO<Game>
     {
 
     }

@@ -10,7 +10,9 @@ namespace GoodGames.Data
             optionsBuilder.UseSqlite("Data Source=data/database.db");
         }
 
-        public DbSet<Statistics> Statistics { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<Game> Games { get; set; }
 
     }
 }

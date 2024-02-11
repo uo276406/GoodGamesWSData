@@ -2,6 +2,7 @@
 using SoapCore;
 using System.ServiceModel;
 using GoodGames.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GoodGames.Data
 {
@@ -23,15 +24,14 @@ namespace GoodGames.Data
                 app.UseDeveloperExceptionPage();
             }
 
-            using(var servicesScope =
-                app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            using(var servicesScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 var context = new DataContext();
                 // context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
-            }
+             }
 
-            app.UseSoapEndpoint<IDataServices>("/DataServices.svc", new BasicHttpBinding(), SoapSerializer.DataContractSerializer, false, null, null, true, true);
+            app.UseSoapEndpoint<IDataServices>("/GoodGamesData.svc", new BasicHttpBinding(), SoapSerializer.DataContractSerializer, false, null, null, true, true);
             app.UseMvc();
         }
     }
