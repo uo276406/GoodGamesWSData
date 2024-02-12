@@ -10,7 +10,7 @@ namespace GoodGames.Data
         public User CreateUser(string username, string password, string email);
 
         [OperationContract]
-        public User GetUser(int id);
+        public User GetUser(int userId);
 
         [OperationContract]
         public User GetUserByUsername(string username);
@@ -22,13 +22,13 @@ namespace GoodGames.Data
         public Game[] GetGamesForUser(int userId);
 
         [OperationContract]
-        public double GetGameMedia(int gameId);
+        public Game UpdateGameStatus(int gameId, int userId, GameStatus status);
 
         [OperationContract]
-        public Game ChangeGameStatus(int gameId, int userId, GameStatus status);
+        public Game UpdateGameMark(int gameId, int userId, double newMark);
 
         [OperationContract]
-        public Game ChangeGameMark(int gameId, int userId, double newMark);
+        public Game AddGameToUser(int gameId, int userId);
 
     }
 }

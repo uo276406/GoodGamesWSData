@@ -1,5 +1,6 @@
 ﻿using GoodGames.Data.Model;
 using System.Media;
+using System.Net.NetworkInformation;
 using System.ServiceModel;
 using System.Xml.Linq;
 
@@ -32,25 +33,6 @@ namespace GoodGames.Data
         }
 
 
-        public double GetGameMedia(int gameId)
-        {
-            using (DAOFactory factory = new DAOFactory())
-            {
-                Game[] game = factory.GameDAO.All().Where((game) => game.GameId == gameId && game.Status.Equals(GameStatus.FINISHED) && game.Mark != -1).ToArray();
-                int numberOfMarks = game.Length;
-
-                if (numberOfMarks == 0)
-                {
-                    throw new FaultException(new FaultReason("There are no marks yet"), new FaultCode("400"), "");
-                }
-
-                double total = game.Sum((game) => game.Mark);
-                return total / numberOfMarks;
-
-            }
-        }
-
-
         public Game[] GetGamesForUser(int userId)
         {
             using (DAOFactory factory = new DAOFactory())
@@ -60,11 +42,11 @@ namespace GoodGames.Data
             }
         }
 
-        public User? GetUser(int id)
+        public User? GetUser(int userId)
         {
             using (DAOFactory factory = new DAOFactory())
             {
-                return factory.UserDAO.Find(id);
+                return factory.UserDAO.Find(userId);
             }
         }
 
@@ -84,7 +66,7 @@ namespace GoodGames.Data
             }
         }
 
-        public Game ChangeGameStatus(int gameId, int userId, GameStatus status)
+        public Game UpdateGameStatus(int gameId, int userId, GameStatus status)
         {
             using (DAOFactory factory = new DAOFactory())
             {
@@ -101,20 +83,12 @@ namespace GoodGames.Data
                 }
                 else
                 {
-                    Game toAdd = new()
-                    {
-                        GameId = gameId,
-                        Mark = -1,
-                        Status = status,
-                        Player = playerRelated
-                    };
-                    factory.GameDAO.Add(toAdd);
-                    return toAdd;
+                    throw new FaultException(new FaultReason("Game not found for user"), new FaultCode("400"), "");
                 }
             }
         }
 
-        public Game ChangeGameMark(int gameId, int userId, double newMark)
+        public Game UpdateGameMark(int gameId, int userId, double newMark)
         {
             using (DAOFactory factory = new DAOFactory())
             {
@@ -131,6 +105,34 @@ namespace GoodGames.Data
                 else
                 {
                     throw new FaultException(new FaultReason("Game not found for user"), new FaultCode("400"), "");
+                }
+            }
+        }
+
+        public Game AddGameToUser(int gameId, int userId)
+        {
+
+            using (DAOFactory factory = new DAOFactory())
+            {
+                User playerRelated = factory.UserDAO.Find(userId);
+                Game? gameFound = factory.GameDAO.All()
+                    .FirstOrDefault(game => game != null && game.GameId == gameId && game.Player != null && game.Player.Equals(playerRelated));
+                
+                if (gameFound == null)
+                {
+                    Game toAdd = new()
+                    {
+                        GameId = gameId,
+                        Mark = -1,
+                        Status = GameStatus.WANT_PLAY,
+                        Player = playerRelated
+                    };
+                    factory.GameDAO.Add(toAdd);
+                    return toAdd;
+                }
+                else
+                {
+                    throw new FaultException(new FaultReason("Game already exists for user"), new FaultCode("400"), "");
                 }
             }
         }
