@@ -22,7 +22,7 @@ namespace GoodGames.Data
         public Game[] GetGamesForUser(int userId);
 
         [OperationContract]
-        public Game UpdateGame(int gameId, int userId, GameStatus newStatus, double newMark, String newReview)
+        public Game UpdateGame(int gameId, int userId, GameStatus newStatus, double newMark, String newReview);
 
         [OperationContract]
         public Game AddGameToUser(int gameId, int userId);

@@ -80,6 +80,7 @@ namespace GoodGames.Data
                     gameFound.Status = newStatus;
                     gameFound.Mark = newMark;
                     gameFound.Review = newReview;
+                    gameFound.LastUpdate = DateTime.Now;
                     factory.GameDAO.Update(gameFound);
                     return gameFound;
                 }
@@ -108,6 +109,7 @@ namespace GoodGames.Data
                         Status = GameStatus.WANT_PLAY,
                         Player = playerRelated,
                         Review = "",
+                        LastUpdate = DateTime.Now,
                     };
                     factory.GameDAO.Add(toAdd);
                     return toAdd;
