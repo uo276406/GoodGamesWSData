@@ -7,5 +7,6 @@
         public GameStatus Status { get; set; }
         public required User Player { get; set; }
         public double Mark { get; set; }
+        public string? Review { get; set; }
     }
 }
