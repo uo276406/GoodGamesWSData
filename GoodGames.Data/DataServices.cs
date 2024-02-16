@@ -38,7 +38,7 @@ namespace GoodGames.Data
             using (DAOFactory factory = new DAOFactory())
             {
                 User playerRelated = factory.UserDAO.Find(userId);
-                return factory.GameDAO.All().Where((game) => game.Player.Equals(playerRelated)).ToArray();
+                return factory.GameDAO.All().Where((game) => game.Player != null && game.Player.Id == playerRelated.Id).ToArray();
             }
         }
 
