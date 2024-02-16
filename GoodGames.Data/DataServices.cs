@@ -42,6 +42,14 @@ namespace GoodGames.Data
             }
         }
 
+        public Game[] GetGamesById(int gameId)
+        {
+            using (DAOFactory factory = new DAOFactory())
+            {
+                return factory.GameDAO.All().Where((game) => game.GameId == gameId).ToArray();
+            }
+        }
+
         public User? GetUser(int userId)
         {
             using (DAOFactory factory = new DAOFactory())
