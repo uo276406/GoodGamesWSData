@@ -13,6 +13,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-COPY ./data/database.db /app/
+COPY ./data/database.db /app/data
 
 ENTRYPOINT ["dotnet", "GoodGames.Data.dll"]
